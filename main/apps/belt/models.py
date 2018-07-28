@@ -15,7 +15,7 @@ class UserManager(models.Manager):
             errors['password'] = "Password must be at least 4 characters!"
         if len(postData['password']) != len(postData['cpassword']):
             errors['password'] = "Passwords must be the same!"
-        if EMAIL_REGEX != postData['email']:
+        if not EMAIL_REGEX.match(postData['email']):
             errors['email'] = "Invalid Email"
         return errors
 
@@ -27,8 +27,9 @@ class User(models.Model):
     cpassword = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    objects = UserManager()
     def __repr__(self):
-        self.name, self.email
+        return self.name, self.email
 
 class Book(models.Model):
     title = models.CharField(max_length=255)
@@ -36,7 +37,7 @@ class Book(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     def __repr__(self):
-        self.title, self.author
+        return self.title, self.author
 
 class Review(models.Model):
     review = models.CharField(max_length=255)
