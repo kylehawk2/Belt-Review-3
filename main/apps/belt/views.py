@@ -49,14 +49,31 @@ def add_book(request):
     return render(request, 'belt/add_book.html')
 
 def create(request):
-    if request.POST != 'none':
-        r = Book.objects.get(title=request.POST['select'])
-        Review.objects.create(review=request.POST['review'], book=Book.objects.get(id=r.id), user=User.objects.get(request.session['email']))
-    else:
-        r = Book.objects.create(title=request.POST['title'], author=request.POST['author'])
-        Review.objects.create(review=request.POST['review'], rating=request.POST['rating'], book=Book.objects.get(id = r.id), user = User.objects.get(email=request.session['email']))
+    # if request.POST['select'] != "none":
+    #     print request.POST
+    #     s = request.Session()
+    #     print s
+    #     r = Book.objects.get(title=request.POST['select'])
+    #     Review.objects.create(review=request.POST['review'], book=Book.objects.get(id=r.id), user=User.objects.get(request.session['email']))
+    # else:
+        # r = Book.objects.create(title=request.POST['title'], author=request.POST['author'])
+    review = Review.objects.create(review=request.POST['review'], rating=request.POST['rating'], book=Book.objects.get(id=id), user = User.objects.get(email=request.session['email']))
+    review.save()
     return redirect('/home')
+def book(request, id):
+    context = {
+        'books' : Book.objects.get(id=id)
+    }
+    return render(request, 'belt/book.html', context)
 
+def user(request, id):
+    context = {
+        'users' : User.objects.get(id=request.session['id']),
+        'review' : Review.objects.filter(user=User.objects.get(id=id).order_by('-created_at')),
+        'review_count' : Review.objets.filter(user=User.objects.get(id=id).order_by('-created_at').count())
+    }
+    return render(request, 'belt/user.html', context)
+    
 def logout(request):
     request.session.flush()
     return redirect('/')
